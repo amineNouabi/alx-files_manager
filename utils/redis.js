@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 import { promisify } from 'util';
 
-export default class RedisClient {
+class RedisClient {
   constructor() {
     this.client = createClient();
 
@@ -28,3 +28,5 @@ export default class RedisClient {
     return this.client.del(key);
   }
 }
+
+export default new RedisClient();
