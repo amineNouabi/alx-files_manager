@@ -10,6 +10,7 @@ export class RedisClient {
 
     this.getAsync = promisify(this.client.get).bind(this);
     this.setAsync = promisify(this.client.set).bind(this);
+    this.expireAsync = promisify(this.client.expire).bind(this);
   }
 
   isAlive() {
@@ -17,11 +18,21 @@ export class RedisClient {
   }
 
   async get(key) {
-    return (this.getAsync(key));
+    try {
+      return await this.getAsync(key);
+    } catch (err) {
+      console.error(`Error getting key ${key}: ${err.message}`);
+    }
+    return null;
   }
 
   async set(key, value, durationSeconds) {
-    return (await this.setAsync(key, value)) && (this.client.expire(key, durationSeconds));
+    try {
+      return (await this.setAsync(key, value)) && (await this.expireAsync(key, durationSeconds));
+    } catch (err) {
+      console.error(`Error setting key ${key}: ${err.message}`);
+    }
+    return null;
   }
 
   async del(key) {
