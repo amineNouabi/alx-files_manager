@@ -2,7 +2,7 @@ import express from 'express';
 
 import bindRoutes from './routes';
 
-const SERVER_PORT = process.env.PORT || 3000;
+const SERVER_PORT = process.env.PORT || 5000;
 
 const app = express();
 
