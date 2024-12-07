@@ -24,8 +24,7 @@ export class RedisClient {
 
     this.getAsync = promisify(this.client.get).bind(this.client);
     this.setAsync = promisify(this.client.set).bind(this.client);
-
-    this.expireAsync = promisify(this.client.expire).bind(this);
+    this.expireAsync = promisify(this.client.expire).bind(this.client);
   }
 
   /**
@@ -58,11 +57,12 @@ export class RedisClient {
  * @param {string} key the key to set
  * @param {string} value the value to set the key to
  * @param {number} durationSeconds the expiration time for the key
- * @returns {Promise<boolean>} true if the key was set successfully, false otherwise
- */
+ * @returns {Promise<string>} the value of the key, or null if the key does not exist
+  */
   async set(key, value, durationSeconds) {
     try {
-      return (this.setAsync(key, value)) && (this.expireAsync(key, durationSeconds));
+      this.expireAsync(key, durationSeconds);
+      return this.setAsync(key, value);
     } catch (err) {
       console.error(`Error setting key ${key}: ${err.message}`);
     }
