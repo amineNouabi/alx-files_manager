@@ -1,21 +1,11 @@
 import { MongoClient } from 'mongodb';
 
-// eslint-disable-next-line import/no-unresolved
-// import {
-//  DB_DATABASE as ENV_DB_DATABASE,
-//  DB_HOST as ENV_DB_HOST,
-//  DB_PORT as ENV_DB_PORT,
-//  DB_URI as ENV_DB_URI,
-// } from '@env';
-const ENV_DB_HOST = null;
-const ENV_DB_PORT = null;
-const ENV_DB_DATABASE = null;
-const ENV_DB_URI = null;
+import config from './config';
 
-const DB_HOST = ENV_DB_HOST || 'localhost';
-const DB_PORT = ENV_DB_PORT || 27017;
-const DB_DATABASE = ENV_DB_DATABASE || 'files_manager';
-const DB_URI = ENV_DB_URI || `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
+const DB_HOST = config.DB_HOST || 'localhost';
+const DB_PORT = config.DB_PORT || 27017;
+const DB_DATABASE = config.DB_DATABASE || 'files_manager';
+const DB_URI = config.DB_URI || `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
 
 export class DBClient {
   constructor() {

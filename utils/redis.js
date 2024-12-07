@@ -1,20 +1,12 @@
 import redis from 'redis';
 import { promisify } from 'util';
 
-// eslint-disable-next-line import/no-unresolved
-// import {
-//  REDIS_HOST as ENV_REDIS_HOST,
-//  REDIS_PORT as ENV_REDIS_PORT,
-//  REDIS_URI as ENV_REDIS_URI
-// } from '@env';
-const ENV_REDIS_HOST = null;
-const ENV_REDIS_PORT = null;
-const ENV_REDIS_URI = null;
+import config from './config';
 
-const REDIS_HOST = ENV_REDIS_HOST || 'localhost';
-const REDIS_PORT = ENV_REDIS_PORT || 6379;
+const REDIS_HOST = config.REDIS_HOST || 'localhost';
+const REDIS_PORT = config.REDIS_PORT || 6379;
 
-const REDIS_URI = ENV_REDIS_URI || `redis://${REDIS_HOST}:${REDIS_PORT}`;
+const REDIS_URI = config.REDIS_URI || `redis://${REDIS_HOST}:${REDIS_PORT}`;
 
 /**
  * @class RedisClient is a class that manages the connection to the Redis server
@@ -35,7 +27,7 @@ export class RedisClient {
   constructor() {
     this.client = redis.createClient({
       url: REDIS_URI,
-      tls: ENV_REDIS_URI ? {} : undefined,
+      tls: config.REDIS_URI ? {} : undefined,
     });
 
     this.getAsync = promisify(this.client.get).bind(this.client);
