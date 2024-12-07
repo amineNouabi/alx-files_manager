@@ -32,6 +32,8 @@ const bindRoutes = (app) => {
   * Files routes
   */
   app.post('/files', restrictAuth, FilesController.postUpload);
+  app.get('/files/:id', restrictAuth, FilesController.getShow);
+  app.get('/files', restrictAuth, FilesController.getIndex);
 };
 
 export default bindRoutes;
