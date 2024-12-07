@@ -20,7 +20,7 @@ export default async function restrictAuth(req, res, next) {
     console.log(e);
   }
 
-  if (!userId) res.status(401).json({ error: 'Unauthorized' });
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
