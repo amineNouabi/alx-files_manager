@@ -17,6 +17,9 @@ export class DBClient {
       }
       this.db = client.db(DB_DATABASE);
     });
+
+    this.users = this.db.collection('users');
+    this.files = this.db.collection('files');
   }
 
   isAlive() {
@@ -24,11 +27,11 @@ export class DBClient {
   }
 
   async nbUsers() {
-    return this.db.collection('users').countDocuments();
+    return this.users.countDocuments();
   }
 
   async nbFiles() {
-    return this.db.collection('files').countDocuments();
+    return this.files.countDocuments();
   }
 }
 
