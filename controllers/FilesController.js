@@ -80,24 +80,24 @@ export default class FilesController {
     })));
   }
 
-  static getShow(req, res) {
+  static async getShow(req, res) {
     const { id: fileId } = req.params;
 
-    const file = dbClient.files.findOne(
+    const file = await dbClient.files.findOne(
       {
         _id: new ObjectId(fileId),
-        userId: new ObjectId(req.user._id),
+        userId: req.user._id,
       },
     );
     if (!file) return res.status(404).json({ error: 'Not found' });
 
     return res.status(200).json({
-      id: file._id.toString(),
-      userId: file.userId.toString(),
+      id: file._id,
+      userId: file.userId,
       name: file.name,
       type: file.type,
       isPublic: file.isPublic,
-      parentId: file.parentId !== '0' && file.parentId !== 0 ? file.parentId.toString() : file.parentId,
+      parentId: file.parentId,
     });
   }
 }
