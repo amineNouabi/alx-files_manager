@@ -5,7 +5,7 @@ import { promisify } from 'util';
  * @class RedisClient is a class that manages the connection to the Redis server
  *
  * @constructor no arguments are passed to the constructor
- * @property {client} redis.RedisClient the Redis client that connects to the server
+ * @property {redis.RedisClient} client the Redis client that connects to the server
  * @method isAlive() checks if the Redis client is connected to the server
  * @method get(key) retrieves the value of a key from the Redis server
  * @method set(key,value,durationSeconds) sets a key in the Redis server
