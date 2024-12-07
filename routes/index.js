@@ -3,6 +3,7 @@ import { Express } from 'express';
 import AppController from '../controllers/AppController';
 
 /**
+* @function bindRoutes - Bind routes to the Express app
  * @param {Express} [app] Express instance
 */
 const bindRoutes = (app) => {
