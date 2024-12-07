@@ -13,13 +13,7 @@ export default async function restrictAuth(req, res, next) {
   if (!req.headers['x-token']) return res.status(401).json({ error: 'Unauthorized' });
 
   const xToken = req.headers['x-token'];
-  let userId = null;
-  try {
-    userId = await redisClient.get(`auth_${xToken}`);
-  } catch (e) {
-    console.log(e);
-  }
-
+  const userId = await redisClient.get(`auth_${xToken}`);
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
