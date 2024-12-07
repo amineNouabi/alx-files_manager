@@ -2,7 +2,11 @@ import redis from 'redis';
 import { promisify } from 'util';
 
 // eslint-disable-next-line import/no-unresolved
-// import { REDIS_HOST as ENV_REDIS_HOST, REDIS_PORT as ENV_REDIS_PORT, REDIS_URI as ENV_REDIS_URI } from '@env';
+// import {
+//  REDIS_HOST as ENV_REDIS_HOST,
+//  REDIS_PORT as ENV_REDIS_PORT,
+//  REDIS_URI as ENV_REDIS_URI
+// } from '@env';
 const ENV_REDIS_HOST = null;
 const ENV_REDIS_PORT = null;
 const ENV_REDIS_URI = null;
