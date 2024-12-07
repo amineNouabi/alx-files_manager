@@ -1,6 +1,14 @@
 import redis from 'redis';
 import { promisify } from 'util';
 
+// eslint-disable-next-line import/no-unresolved
+import { REDIS_HOST as ENV_REDIS_HOST, REDIS_PORT as ENV_REDIS_PORT, REDIS_URI as ENV_REDIS_URI } from '@env';
+
+const REDIS_HOST = ENV_REDIS_HOST || 'localhost';
+const REDIS_PORT = ENV_REDIS_PORT || 6379;
+
+const REDIS_URI = ENV_REDIS_URI || `redis://${REDIS_HOST}:${REDIS_PORT}`;
+
 /**
  * @class RedisClient is a class that manages the connection to the Redis server
  *
@@ -12,12 +20,17 @@ import { promisify } from 'util';
  *                                      with a value and expiration time
  * @method del(key) deletes a key from the Redis server
  */
+
 export class RedisClient {
 /**
  * Constructor for RedisClient
  */
   constructor() {
-    this.client = redis.createClient();
+    this.client = redis.createClient({
+      url: REDIS_URI,
+      tls: ENV_REDIS_URI ? {} : undefined,
+    });
+
     this.getAsync = promisify(this.client.get).bind(this.client);
 
     this.client.on('error', (err) => console.log(`Redis client not connected to the server: ${err.message}`));

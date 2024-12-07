@@ -1,13 +1,16 @@
 import { MongoClient } from 'mongodb';
 
-const DB_HOST = process.env.DB_HOST || 'localhost';
+// eslint-disable-next-line import/no-unresolved
+import { DB_HOST as ENV_DB_HOST, DB_URI as ENV_DB_URI } from '@env';
+
+const DB_HOST = ENV_DB_HOST || 'localhost';
 const DB_PORT = process.env.DB_PORT || 27017;
 const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
-const DB_URL = `mongodb://${DB_HOST}:${DB_PORT}`;
+const DB_URI = ENV_DB_URI || `mongodb://${DB_HOST}:${DB_PORT}`;
 
 export class DBClient {
   constructor() {
-    MongoClient.connect(DB_URL, {
+    MongoClient.connect(DB_URI, {
       useUnifiedTopology: true,
     }, (err, client) => {
       if (err) {
