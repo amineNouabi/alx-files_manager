@@ -19,10 +19,11 @@ export class DBClient {
       this.client = new MongoClient(DB_URI, {
         useUnifiedTopology: true,
       });
-      this.client.connect();
-      this.db = this.client.db();
-      this.users = this.db.collection('users');
-      this.files = this.db.collection('files');
+      this.client.connect().then(() => {
+        this.db = this.client.db();
+        this.users = this.db.collection('users');
+        this.files = this.db.collection('files');
+      });
     } catch (error) {
       console.log(error);
     }
