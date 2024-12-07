@@ -24,7 +24,6 @@ export class DBClient {
   }
 
   async nbUsers() {
-    console.log(this.db.collection('users').countDocuments());
     return this.db.collection('users').countDocuments();
   }
 
