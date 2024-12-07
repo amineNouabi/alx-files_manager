@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -13,7 +14,8 @@ export default async function restrictAuth(req, res, next) {
   const xToken = req.headers['x-token'];
   const userId = await redisClient.get(`auth_${xToken}`);
   if (!userId) res.status(401).json({ error: 'Unauthorized' });
-  const user = await dbClient.users.findOne({ id: userId });
+  const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  req.user = user;
   return next();
 }
