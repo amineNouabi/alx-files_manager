@@ -1,5 +1,6 @@
 import AppController from '../controllers/AppController';
 import AuthController from '../controllers/AuthController';
+import FilesController from '../controllers/FilesController';
 import UsersController from '../controllers/UsersController';
 
 import restrictAuth from '../middlewares/restrict';
@@ -19,6 +20,7 @@ const bindRoutes = (app) => {
    * Users routes
   */
   app.post('/users', UsersController.postNew);
+  app.get('/users/me', restrictAuth, UsersController.getMe);
 
   /**
   * Auth routes
@@ -26,8 +28,10 @@ const bindRoutes = (app) => {
   app.get('/connect', AuthController.getConnect);
   app.get('/disconnect', AuthController.getDisconnect);
 
-  app.use(restrictAuth);
-  app.get('/users/me', restrictAuth, UsersController.getMe);
+  /**
+  * Files routes
+  */
+  app.post('/files', restrictAuth, FilesController.postUpload);
 };
 
 export default bindRoutes;

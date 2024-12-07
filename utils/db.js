@@ -14,7 +14,7 @@ export class DBClient {
         useUnifiedTopology: true,
       });
       this.client.connect().then(() => {
-        this.db = this.client.db();
+        this.db = this.client.db(DB_DATABASE);
         this.users = this.db.collection('users');
         this.files = this.db.collection('files');
       });
