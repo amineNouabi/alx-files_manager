@@ -24,11 +24,12 @@ export class DBClient {
   }
 
   async nbUsers() {
-    return this.db.collection('users').count();
+    console.log(this.db.collection('users').countDocuments());
+    return this.db.collection('users').countDocuments();
   }
 
   async nbFiles() {
-    return this.db.collection('files').count();
+    return this.db.collection('files').countDocuments();
   }
 }
 
