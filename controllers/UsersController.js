@@ -11,7 +11,7 @@ export default class UsersController {
       if (existingUser) return res.status(400).json({ error: 'Already exist' });
       const hashedPassword = sha1(password, { asString: true });
       const user = await dbClient.users.insertOne({ email, password: hashedPassword });
-      return res.status(201).json({ email, password, id: user.id.toString() });
+      return res.status(201).json({ email, password, id: user.id });
     } catch (err) {
       return res.status(400).json({ error: err.message });
     }
