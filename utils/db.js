@@ -16,10 +16,9 @@ export class DBClient {
         return;
       }
       this.db = client.db(DB_DATABASE);
+      this.users = this.db.collection('users');
+      this.files = this.db.collection('files');
     });
-
-    this.users = this.db.collection('users');
-    this.files = this.db.collection('files');
   }
 
   isAlive() {
