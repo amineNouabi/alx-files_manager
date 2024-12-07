@@ -23,8 +23,6 @@ export class RedisClient {
     this.client.on('connect', () => console.log('Redis client connected to the server'));
 
     this.getAsync = promisify(this.client.get).bind(this.client);
-    this.setAsync = promisify(this.client.set).bind(this.client);
-    this.expireAsync = promisify(this.client.expire).bind(this.client);
   }
 
   /**
@@ -43,12 +41,7 @@ export class RedisClient {
  * @returns {Promise<string>} the value of the key, or null if the key does not exist
  */
   async get(key) {
-    try {
-      return this.getAsync(key);
-    } catch (err) {
-      console.error(`Error getting key ${key}: ${err.message}`);
-    }
-    return null;
+    return this.getAsync(key);
   }
 
   /**
@@ -57,16 +50,10 @@ export class RedisClient {
  * @param {string} key the key to set
  * @param {string} value the value to set the key to
  * @param {number} durationSeconds the expiration time for the key
- * @returns {Promise<string>} the value of the key, or null if the key does not exist
+ * @returns {Promise<string>} the value of the key
   */
   async set(key, value, durationSeconds) {
-    try {
-      this.expireAsync(key, durationSeconds);
-      return this.setAsync(key, value);
-    } catch (err) {
-      console.error(`Error setting key ${key}: ${err.message}`);
-    }
-    return null;
+    return this.client.setex(key, durationSeconds, value);
   }
 
   /**
