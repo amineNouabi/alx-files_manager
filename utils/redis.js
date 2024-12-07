@@ -66,7 +66,7 @@ export class RedisClient {
  * @param {number} durationSeconds the expiration time for the key
  * @returns {Promise<string>} the value of the key
   */
-  async set(key, value, durationSeconds) {
+  async set(key, value, durationSeconds = 5 * 60) {
     return this.client.setex(key, durationSeconds, value);
   }
 

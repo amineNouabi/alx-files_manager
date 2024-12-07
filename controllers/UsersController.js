@@ -18,4 +18,8 @@ export default class UsersController {
       return res.status(400).json({ error: err.message });
     }
   }
+
+  static async getMe(req, res) {
+    return res.json({ id: req.user._id.toString(), email: req.user.email });
+  }
 }
