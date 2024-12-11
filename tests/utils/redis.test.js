@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import redisClient from '../../utils/redis';
 
 describe('redis client', () => {
 
   before(async () => {
+    await waitForRedisConnection();
     await redisClient.client.flushall('ASYNC');
   });
 
@@ -13,7 +13,7 @@ describe('redis client', () => {
 
   it('connects to Redis server',async () => {
     setTimeout(() => {
-      expect(redisClient.isAlive()).to.equal(true);
+      expect(redisClient.isAlive()).to.be.true;
     }, 1000);
   });
 

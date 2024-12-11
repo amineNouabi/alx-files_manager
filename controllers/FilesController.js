@@ -90,6 +90,7 @@ export default class FilesController {
         userId: req.user._id,
       },
     );
+
     if (!file) return res.status(404).json({ error: 'Not found' });
 
     return res.status(200).json({
