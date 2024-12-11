@@ -44,7 +44,7 @@ export class RedisClient {
  * @returns {boolean} true if the client is connected to the server, false otherwise
  */
   isAlive() {
-    return this.client.connected;
+    return !!this.client.connected;
   }
 
   /**

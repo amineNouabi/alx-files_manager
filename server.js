@@ -14,3 +14,5 @@ bindRoutes(app);
 app.listen(SERVER_PORT, () => {
   console.log(`Server is running on port ${SERVER_PORT}`);
 });
+
+export default app;
