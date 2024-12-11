@@ -1,5 +1,5 @@
-import { before } from 'node:test';
 import { v4 as uuidv4 } from 'uuid';
+import redisClient from '../../utils/redis';
 
 describe('redis client', () => {
 
@@ -65,8 +65,10 @@ describe('redis client', () => {
     }
 
     await redisClient.client.flushall();
+
     for (let i = 0; i < 10; i++) {
       expect(await redisClient.get(keys[i])).to.equal(null);
     }
+
   });
 });

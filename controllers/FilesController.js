@@ -57,16 +57,17 @@ export default class FilesController {
   static async getIndex(req, res) {
     const parentId = req.query.parentId && req.query.parentId !== '0' ? new ObjectId(req.query.parentId) : 0;
     let page;
+
     try {
-      page = parseInt(req.query.page, 10) || 1;
+      page = parseInt(req.query.page, 10) || 0;
     } catch (e) {
-      page = 1;
+      page = 0;
     }
 
     const files = await dbClient.files.find({
       parentId,
       userId: req.user._id,
-    }).skip((page - 1) * RECORDS_PER_PAGE)
+    }).skip(page * RECORDS_PER_PAGE)
       .limit(RECORDS_PER_PAGE)
       .toArray();
 
