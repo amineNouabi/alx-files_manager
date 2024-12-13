@@ -1,9 +1,8 @@
+import { expect } from 'chai';
 
-describe('DB client', () => {
-
+describe('dB client', () => {
   before(async () => {
-      await waitForDBConnection();
-      await dbClient.db.collection('tests').deleteMany({});
+    await dbClient.db.collection('tests').deleteMany({});
   });
 
   after(async () => {
@@ -11,6 +10,8 @@ describe('DB client', () => {
   });
 
   it('connects to Mongodb server', async () => {
+    expect.assertions(1);
+    // eslint-disable-next-line no-unused-expressions
     expect(dbClient.isAlive()).to.be.true;
   });
 

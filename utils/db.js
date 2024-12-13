@@ -9,15 +9,15 @@ const DB_URI = config.DB_URI || `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`
 
 export class DBClient {
   constructor() {
-      MongoClient.connect(DB_URI, {
-        useUnifiedTopology: true,
-      },  (err, client) => {
-        if (err)  throw err;
-        this.client = client;
-        this.db = client.db(DB_DATABASE);
-        this.users = this.db.collection('users');
-        this.files = this.db.collection('files');
-      });
+    MongoClient.connect(DB_URI, {
+      useUnifiedTopology: true,
+    }, (err, client) => {
+      if (err) throw err;
+      this.client = client;
+      this.db = client.db(DB_DATABASE);
+      this.users = this.db.collection('users');
+      this.files = this.db.collection('files');
+    });
   }
 
   isAlive() {
