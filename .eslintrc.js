@@ -2,9 +2,8 @@ module.exports = {
     env: {
       browser: false,
       es6: true,
-      jest: false,
+      jest: true,
       mocha: true,
-      chai: true,
     },
     extends: [
       'airbnb-base',
@@ -13,6 +12,11 @@ module.exports = {
     globals: {
       Atomics: 'readonly',
       SharedArrayBuffer: 'readonly',
+      assert: 'readonly',
+      request: 'readonly',
+      app: 'readonly',
+      dbClient: 'readonly',
+      redisClient: 'readonly'
     },
     parserOptions: {
       ecmaVersion: 2018,

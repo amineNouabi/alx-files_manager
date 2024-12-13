@@ -55,7 +55,7 @@ export default class FilesController {
   }
 
   static async getIndex(req, res) {
-    const parentId = req.query.parentId && req.query.parentId !== '0' ? new ObjectId(req.query.parentId) : "0";
+    const parentId = req.query.parentId && req.query.parentId !== '0' ? new ObjectId(req.query.parentId) : '0';
     let page;
 
     try {
