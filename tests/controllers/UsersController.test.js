@@ -47,4 +47,30 @@ describe("Users controller", () => {
     expect(res.body.error).to.equal("Already exist");
   });
 
+  it('GET /users/me - Unauthenticated', async () => {
+    const res = await request.get("/users/me");
+    expect(res.status).to.equal(401);
+    expect(res.body).to.have.keys("error");
+    expect(res.body.error).to.equal("Unauthorized");
+  });
+
+  it('GET /users/me - Invalid token', async () => {
+    const res = await request.get("/users/me").set("X-Token", "invalid");
+    expect(res.status).to.equal(401);
+    expect(res.body).to.have.keys("error");
+    expect(res.body.error).to.equal("Unauthorized");
+  });
+
+  it('GET /users/me', async () => {
+    const res = await request.get("/connect").auth(dummyUser.email, dummyUser.password, { type: 'basic' });
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys("token");
+    expect(res.body.token).to.be.a("string");
+
+    const res2 = await request.get("/users/me").set("X-Token", res.body.token);
+    expect(res2.status).to.equal(200);
+    expect(res2.body).to.have.keys("id", "email");
+    expect(res2.body.email).to.equal(dummyUser.email);
+  });
+
 });
