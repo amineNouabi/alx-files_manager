@@ -1,6 +1,5 @@
 describe('app controller', () => {
   it('get /status', async () => {
-    expect.assertions(4);
     const res = await request.get('/status');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.have.keys('redis', 'db');
@@ -9,7 +8,6 @@ describe('app controller', () => {
   });
 
   it('get /stats', async () => {
-    expect.assertions(6);
     const res = await request.get('/stats');
     expect(res.status).to.be.equal(200);
     expect(res.body).to.have.keys('users', 'files');

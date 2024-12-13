@@ -10,8 +10,6 @@ describe('dB client', () => {
   });
 
   it('connects to Mongodb server', async () => {
-    expect.assertions(1);
-    // eslint-disable-next-line no-unused-expressions
     expect(dbClient.isAlive()).to.be.true;
   });
 

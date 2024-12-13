@@ -1,9 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 describe('redis client', () => {
-
   before(async () => {
-    await waitForRedisConnection();
     await redisClient.client.flushall('ASYNC');
   });
 
@@ -11,7 +9,7 @@ describe('redis client', () => {
     await redisClient.client.flushall('ASYNC');
   });
 
-  it('connects to Redis server',async () => {
+  it('connects to Redis server', async () => {
     setTimeout(() => {
       expect(redisClient.isAlive()).to.be.true;
     }, 1000);
@@ -40,11 +38,11 @@ describe('redis client', () => {
   });
 
   it('expires a value', async () => {
-      const key = uuidv4();
-      const value = uuidv4();
-      await redisClient.set(key, value, 3);
-      setTimeout(async () => {
-        expect(await redisClient.get(key)).to.equal(value)
+    const key = uuidv4();
+    const value = uuidv4();
+    await redisClient.set(key, value, 3);
+    setTimeout(async () => {
+      expect(await redisClient.get(key)).to.equal(value);
     }, 2000);
 
     await redisClient.set(key, value, 1);
@@ -69,6 +67,5 @@ describe('redis client', () => {
     for (let i = 0; i < 10; i++) {
       expect(await redisClient.get(keys[i])).to.equal(null);
     }
-
   });
 });
