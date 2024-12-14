@@ -138,6 +138,8 @@ export default class FilesController {
       userId: user._id,
     });
 
+    if (!file) return res.status(404).json({ error: 'Not found' });
+
     await dbClient.files.updateOne(
       { _id: new ObjectId(fileId) },
       { $set: { isPublic: false } },
