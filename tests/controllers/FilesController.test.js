@@ -280,11 +280,29 @@ describe('files controller', () => {
     expect(res.body.parentId).to.equal("0");
   });
 
+  it('put /files/:id/publish - File already public', async () => {
+    const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0", isPublic: true });
+
+    const fileFromApi = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
+    expect(fileFromApi.status).to.equal(200);
+    expect(fileFromApi.body.isPublic).to.be.true;
+
+    const res = await request.put(`/files/${file.insertedId}/publish`).set('X-Token', token);
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys('id', 'userId', 'name', 'type', 'isPublic', 'parentId');
+    expect(res.body.id).to.be.a('string');
+    expect(res.body.userId).to.be.a('string');
+    expect(res.body.userId).to.equal(user._id.toString());
+    expect(res.body.name).to.equal('test');
+    expect(res.body.type).to.equal('folder');
+    expect(res.body.isPublic).to.be.true;
+    expect(res.body.parentId).to.equal("0");
+  });
+
   it('put /files/:id/publish - usecase', async () => {
     const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0", isPublic: false });
     const fileFromApi = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
     expect(fileFromApi.status).to.equal(200);
-    console.log(fileFromApi.body);
     expect(fileFromApi.body.isPublic).to.be.false;
 
     const res = await request.put(`/files/${ file.insertedId }/publish`).set('X-Token', token);

@@ -114,12 +114,10 @@ export default class FilesController {
 
     if (!file) return res.status(404).json({ error: 'Not found' });
 
-    const result = await dbClient.files.updateOne(
+    await dbClient.files.updateOne(
       { _id: new ObjectId(fileId) },
       { $set: { isPublic: true } },
     );
-
-    if (!result.modifiedCount) return res.status(404).json({ error: 'Not found' });
 
     return res.status(200).json({
       id: file._id,
@@ -155,6 +153,27 @@ export default class FilesController {
       name: file.name,
       type: file.type,
       isPublic: false,
+      parentId: file.parentId,
+    });
+  }
+
+  static async getFile(req, res) {
+    const { id: fileId } = req.params;
+
+    const file = await dbClient.files.findOne({
+      _id: new ObjectId(fileId),
+    });
+
+    if (!file) return res.status(404).json({ error: 'Not found' });
+
+    if (!file.isPublic && !req.user) return res.status(403).json({ error: 'Not authorized' });
+
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
       parentId: file.parentId,
     });
   }
