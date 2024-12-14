@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { expect } from 'chai';
 import {
 	existsSync, readFileSync, readdirSync, unlinkSync,
@@ -245,4 +246,119 @@ describe('files controller', () => {
 
     expect(initialFiles.length).to.equal(20);
   });
+
+  it('put /files/:id/publish - Unauthorized', async () => {
+    const res = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/publish');
+    expect(res.status).to.equal(401);
+    expect(res.body).to.have.keys('error');
+    expect(res.body.error).to.equal('Unauthorized');
+
+    const res2 = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/publish').set('X-Token', 'invalid');
+    expect(res2.status).to.equal(401);
+    expect(res2.body).to.have.keys('error');
+    expect(res2.body.error).to.equal('Unauthorized');
+  });
+
+  it('put /files/:id/publish - file not found', async () => {
+    const res = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/publish').set('X-Token', token);
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.keys('error');
+    expect(res.body.error).to.equal('Not found');
+  });
+
+  it('put /files/:id/publish - Success', async () => {
+    const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0"});
+    const res = await request.put(`/files/${file.insertedId}/publish`).set('X-Token', token);
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys('id', 'userId', 'name', 'type', 'isPublic', 'parentId');
+    expect(res.body.id).to.be.a('string');
+    expect(res.body.userId).to.be.a('string');
+    expect(res.body.userId).to.equal(user._id.toString());
+    expect(res.body.name).to.equal('test');
+    expect(res.body.type).to.equal('folder');
+    expect(res.body.isPublic).to.be.true;
+    expect(res.body.parentId).to.equal("0");
+  });
+
+  it('put /files/:id/publish - usecase', async () => {
+    const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0", isPublic: false });
+    const fileFromApi = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
+    expect(fileFromApi.status).to.equal(200);
+    console.log(fileFromApi.body);
+    expect(fileFromApi.body.isPublic).to.be.false;
+
+    const res = await request.put(`/files/${ file.insertedId }/publish`).set('X-Token', token);
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys('id', 'userId', 'name', 'type', 'isPublic', 'parentId');
+    expect(res.body.id).to.be.a('string');
+    expect(res.body.userId).to.be.a('string');
+    expect(res.body.userId).to.equal(user._id.toString());
+    expect(res.body.name).to.equal('test');
+    expect(res.body.type).to.equal('folder');
+    expect(res.body.isPublic).to.be.true;
+    expect(res.body.parentId).to.equal("0");
+
+    const fileFromApi2 = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
+    expect(fileFromApi2.status).to.equal(200);
+    expect(fileFromApi2.body.isPublic).to.be.true;
+
+  });
+
+  it('put /files/:id/unpublish - Unauthorized', async () => {
+    const res = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/unpublish');
+    expect(res.status).to.equal(401);
+    expect(res.body).to.have.keys('error');
+    expect(res.body.error).to.equal('Unauthorized');
+
+    const res2 = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/unpublish').set('X-Token', 'invalid');
+    expect(res2.status).to.equal(401);
+    expect(res2.body).to.have.keys('error');
+    expect(res2.body.error).to.equal('Unauthorized');
+  });
+
+  it('put /files/:id/unpublish - file not found', async () => {
+    const res = await request.put('/files/5f9d88b2f3f6e5d3a5e6c7e8/unpublish').set('X-Token', token);
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.keys('error');
+    expect(res.body.error).to.equal('Not found');
+  });
+
+  it('put /files/:id/unpublish - Success', async () => {
+    const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0", isPublic: true });
+    const res = await request.put(`/files/${file.insertedId}/unpublish`).set('X-Token', token);
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys('id', 'userId', 'name', 'type', 'isPublic', 'parentId');
+    expect(res.body.id).to.be.a('string');
+    expect(res.body.userId).to.be.a('string');
+    expect(res.body.userId).to.equal(user._id.toString());
+    expect(res.body.name).to.equal('test');
+    expect(res.body.type).to.equal('folder');
+    expect(res.body.isPublic).to.be.false;
+    expect(res.body.parentId).to.equal("0");
+});
+
+  it('put /files/:id/unpublish - usecase', async () => {
+    const file = await dbClient.files.insertOne({ userId: new ObjectId(user._id), name: 'test', type: 'folder', parentId: "0", isPublic: true });
+    const fileFromApi = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
+    expect(fileFromApi.status).to.equal(200);
+    expect(fileFromApi.body.isPublic).to.be.true;
+
+    const res = await request.put(`/files/${ file.insertedId }/unpublish`).set('X-Token', token);
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.keys('id', 'userId', 'name', 'type', 'isPublic', 'parentId');
+    expect(res.body.id).to.be.a('string');
+    expect(res.body.userId).to.be.a('string');
+    expect(res.body.userId).to.equal(user._id.toString());
+    expect(res.body.name).to.equal('test');
+    expect(res.body.type).to.equal('folder');
+    expect(res.body.isPublic).to.be.false;
+    expect(res.body.parentId).to.equal("0");
+
+    const fileFromApi2 = await request.get(`/files/${file.insertedId}`).set('X-Token', token);
+    expect(fileFromApi2.status).to.equal(200);
+    expect(fileFromApi2.body.isPublic).to.be.false;
+  });
+
+
+
 });

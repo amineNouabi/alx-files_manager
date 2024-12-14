@@ -15,7 +15,7 @@ export default class FilesController {
   static async postUpload(req, res) {
     const { name, type, data } = req.body;
     const parentId = req.body.parentId && req.body.parentId !== '0' && req.body.parentId !== 0 ? new ObjectId(req.body.parentId) : 0;
-    const isPublic = req.body.isPublic || false;
+    const isPublic = !!req.body.isPublic;
 
     if (!name) return res.status(400).json({ error: 'Missing name' });
     if (!type || !SUPPORTED_TYPES.includes(type)) return res.status(400).json({ error: 'Missing type' });
@@ -99,6 +99,62 @@ export default class FilesController {
       name: file.name,
       type: file.type,
       isPublic: file.isPublic,
+      parentId: file.parentId,
+    });
+  }
+
+  static async putPublish(req, res) {
+    const { id: fileId } = req.params;
+    const { user } = req;
+
+    const file = await dbClient.files.findOne({
+      _id: new ObjectId(fileId),
+      userId: user._id,
+    });
+
+    if (!file) return res.status(404).json({ error: 'Not found' });
+
+    const result = await dbClient.files.updateOne(
+      { _id: new ObjectId(fileId) },
+      { $set: { isPublic: true } },
+    );
+
+    if (!result.modifiedCount) return res.status(404).json({ error: 'Not found' });
+
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: true,
+      parentId: file.parentId,
+    });
+  }
+
+  static async putUnpublish(req, res) {
+    const { id: fileId } = req.params;
+    const { user } = req;
+
+    const file = await dbClient.files.findOne({
+      _id: new ObjectId(fileId),
+      userId: user._id,
+    });
+
+    if (!file) return res.status(404).json({ error: 'Not found' });
+
+    const result = await dbClient.files.updateOne(
+      { _id: new ObjectId(fileId) },
+      { $set: { isPublic: false } },
+    );
+
+    if (!result.modifiedCount) return res.status(404).json({ error: 'Not found' });
+
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: false,
       parentId: file.parentId,
     });
   }
