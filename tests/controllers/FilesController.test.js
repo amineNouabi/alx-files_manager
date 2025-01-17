@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import {
 	existsSync, readFileSync, readdirSync, unlinkSync,
 } from 'fs';
-
 import { ObjectId } from 'mongodb';
 import { resolve } from 'path';
 import sha1 from 'sha1';
@@ -377,6 +376,53 @@ describe('files controller', () => {
     expect(fileFromApi2.body.isPublic).to.be.false;
   });
 
+  it('get /files/:id/data - no document', async () => {
+    const nonExistingId = '5f9d88b2f3f6e5d3a5e6c7e8';
+    expect(await dbClient.files.findOne({ _id: new ObjectId(nonExistingId) })).to.be.null;
 
+    const res = await request.get(`/files/${nonExistingId}/data`);
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.keys('error')
+    expect(res.body.error).to.equal('Not found');
+
+    const res2 = await request.get(`/files/${nonExistingId}/data`).set('X-Token', token);
+    expect(res2.status).to.equal(404);
+    expect(res2.body).to.have.keys('error')
+    expect(res2.body.error).to.equal('Not found');
+  });
+
+  it('get /files/:id/data - Private file', async () => {
+    const newUser = {
+        email: 'a@a.com',
+        password: Math.random().toString(34)
+    }
+    const newUserRes = await dbClient.users.insertOne({
+        email: newUser.email,
+        password: sha1(newUser.password)
+    });
+
+    const newFileRes = await request.post('/files').set('X-Token', token).send({
+        userId: newUserRes.insertedId.toString(),
+        name: 'test.txt', type: 'file',
+        data: 'SGVsbG8gV2Vic3RhY2shCg==',
+        isPublic: false
+    });
+    expect(newFileRes.status).to.equal(201);
+
+
+    const res = await request.get(`/files/${newFileRes.body.id}/data`);
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.keys('error')
+    expect(res.body.error).to.equal('Not found');
+
+    const res2 = await request.get(`/files/${newFileRes.body.id}/data`).set('X-Token', token);
+    expect(res2.status).to.equal(404);
+    expect(res2.body).to.have.keys('error')
+    expect(res2.body.error).to.equal('Not found');
+
+    const resConnect = await request.get('/connect').auth(newUser.email, newUser.password, { type: 'basic'});
+    const res3 = await request.get(`/files/${newFileRes.body.id}/data`).set('X-Token', newUserToken);
+    expect(res.status).to.equal(200);
+  });
 
 });

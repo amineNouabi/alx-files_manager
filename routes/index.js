@@ -3,13 +3,18 @@ import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
 import UsersController from '../controllers/UsersController';
 
-import restrictAuth from '../middlewares/restrict';
+import bindUser from '../middlewares/bindUser';
+import restrictAuth from '../middlewares/restrictAuth';
 
 /**
 * @function bindRoutes - Bind routes to the Express app
  * @param {Express} [app] Express instance
 */
 const bindRoutes = (app) => {
+/**
+ *
+*/
+  app.use(bindUser);
   /**
    * App routes
   */
@@ -36,6 +41,7 @@ const bindRoutes = (app) => {
   app.get('/files', restrictAuth, FilesController.getIndex);
   app.put('/files/:id/publish', restrictAuth, FilesController.putPublish);
   app.put('/files/:id/unpublish', restrictAuth, FilesController.putUnpublish);
+  app.get('/files/:id/data', FilesController.getFile);
 };
 
 export default bindRoutes;

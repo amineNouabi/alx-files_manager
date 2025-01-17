@@ -1,6 +1,8 @@
-import { writeFile } from 'fs';
+import Queue from 'bull/lib/queue';
+import { existsSync, writeFile } from 'fs';
+import { contentType } from 'mime-types';
 import { ObjectId } from 'mongodb';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { promisify } from 'util';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../utils/config';
@@ -42,6 +44,15 @@ export default class FilesController {
     }
 
     const result = await dbClient.files.insertOne(newFile);
+
+    if (type === 'image') {
+      const fileQueue = Queue('image thumbnails');
+      const name = `Image Thumbnails [${req.user._id.toString()}-${result.insertedId.toString()}]`;
+      fileQueue.add(
+        { userId: req.user._id.toString(), fileId: result.insertedId.toString(), name },
+      );
+    }
+
     return res.status(201).json(
       {
         id: result.insertedId.toString(),
@@ -156,23 +167,23 @@ export default class FilesController {
   }
 
   static async getFile(req, res) {
+    const { size: imageSize } = req.query;
     const { id: fileId } = req.params;
 
     const file = await dbClient.files.findOne({
       _id: new ObjectId(fileId),
     });
 
-    if (!file) return res.status(404).json({ error: 'Not found' });
+    if (!file || (!file.isPublic && (!req.user || req.user._id.toString() !== file.userId.toString()))) return res.status(404).json({ error: 'Not found' });
 
-    if (!file.isPublic && !req.user) return res.status(403).json({ error: 'Not authorized' });
+    if (file.type === 'folder') return res.status(404).json({ error: 'A folder doesn\'t have content' });
 
-    return res.status(200).json({
-      id: file._id,
-      userId: file.userId,
-      name: file.name,
-      type: file.type,
-      isPublic: file.isPublic,
-      parentId: file.parentId,
-    });
+    let filePath = resolve(file.localPath);
+    if (file.type === 'image' && imageSize) filePath += `_${imageSize}`;
+
+    if (!existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+
+    res.setHeader('Content-Type', contentType(file.name) || 'text/plain; charset=utf-8');
+    return res.status(200).sendFile(filePath);
   }
 }

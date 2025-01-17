@@ -24,7 +24,7 @@ if (!existsSync(config.FOLDER_PATH)) mkdirSync(config.FOLDER_PATH, { recursive: 
  * Load environment variables from a .env file
  * @param {string} path - the path to the .env file
  */
-function loadEnv(path) {
+export function loadEnv(path) {
   if (!existsSync(path)) {
     return;
   }
